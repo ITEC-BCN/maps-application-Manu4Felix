@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.ui.screens.DrawerScreen
+import com.example.mapsapp.ui.screens.MapsScreen
 import com.example.mapsapp.ui.screens.PermissionScreen
 
 @Composable
@@ -19,5 +20,9 @@ fun MainNavigationWrapper() {
         composable<Destination.Drawer>{
             DrawerScreen()
         }
+        composable<Destination.Map>{
+            MapsScreen()
+        }
+
     }
 }

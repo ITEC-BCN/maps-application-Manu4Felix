@@ -6,5 +6,4 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun InternalNavigationWrapper(navController: NavHostController, padding: Modifier) {
-
 }
