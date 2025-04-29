@@ -20,9 +20,7 @@ fun MainNavigationWrapper() {
         composable<Destination.Drawer>{
             DrawerScreen()
         }
-        composable<Destination.Map>{
-            MapsScreen()
-        }
+
 
     }
 }
