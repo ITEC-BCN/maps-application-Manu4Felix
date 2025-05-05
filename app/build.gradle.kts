@@ -1,3 +1,12 @@
+import java.util.Properties
+
+val localPropsFile = rootProject.file("local.properties")
+val localProps = Properties().apply {
+    if (localPropsFile.exists()) {
+        load(localPropsFile.inputStream())
+    }
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,6 +17,9 @@ plugins {
 }
 
 android {
+    namespace = "com.example.supabasetest"
+    compileSdk = 35
+
     namespace = "com.example.mapsapp"
     compileSdk = 35
 
@@ -19,6 +31,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            type = "String",
+            name = "SUPABASE_URL",
+            value = "\"${localProps.getProperty("supabaseUrl") ?: ""}\""
+        )
+        buildConfigField(
+            type = "String",
+            name = "SUPABASE_KEY",
+            value = "\"${localProps.getProperty("supabaseKey") ?: ""}\""
+        )
+
     }
 
     buildTypes {
@@ -39,6 +63,8 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+
     }
 }
 
