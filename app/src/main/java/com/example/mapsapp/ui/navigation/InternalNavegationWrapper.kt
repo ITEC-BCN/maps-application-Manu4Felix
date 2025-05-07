@@ -10,25 +10,27 @@ import com.example.mapsapp.ui.screens.MapsScreen
 import com.example.mapsapp.ui.screens.MarkerListScreen
 
 @Composable
-fun InternalNavigationWrapper(navController: NavHostController, padding: Modifier) {
+fun InternalNavigationWrapper(navController: NavHostController, modifier: Modifier) {
     NavHost(navController, Destination.Map) {
         composable<Destination.Map> {
             MapsScreen(
-                modifier = padding,
-                navigateToMarker = {
-                    navController.navigate(Destination.MarkerCreation){
-                        popUpTo(Destination.Map){
-                            saveState = true
-                        }
-                    }
+                modifier = modifier,
+                navigateToMarker = { coordenades ->
+                    navController.navigate(Destination.MarkerCreation(coordenades))
                 }
             )
         }
         composable<Destination.List>{
             MarkerListScreen ()
         }
-        composable<Destination.MarkerCreation>{
-            CreateMarkerScreen()
+        composable<Destination.MarkerCreation> {
+
+            CreateMarkerScreen(
+                navigateToDetail = { markerId ->
+                    navController.navigate(Destination.MarkerDetail(markerId.toInt()))
+                }
+
+            )
         }
     }
 }

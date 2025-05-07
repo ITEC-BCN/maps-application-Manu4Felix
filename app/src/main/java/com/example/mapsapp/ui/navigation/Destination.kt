@@ -16,10 +16,9 @@ import kotlinx.serialization.Serializable
         object List: Destination()
 
         @Serializable
-        data class MarkerCreation(val coordeandes: String)
+        data class MarkerCreation(val coordenadas: String): Destination()
 
         @Serializable
         data class MarkerDetail(val id:Int): Destination()
-
     }
 

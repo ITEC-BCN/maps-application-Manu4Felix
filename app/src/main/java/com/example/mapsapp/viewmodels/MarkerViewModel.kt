@@ -2,76 +2,91 @@ package com.example.mapsapp.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.mapsapp.MyApp
-import com.example.mapsapp.data.Student
+import com.example.mapsapp.data.Marker
+import com.example.mapsapp.data.MySupabaseClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MarkerViewModel: ViewModel() {
+class MarkerViewModel : ViewModel() {
 
-    val database = MyApp.database
+    private val supabaseClient = MySupabaseClient()
 
-    private val _studentsList = MutableLiveData<List<Student>>()
-    val studentsList = _studentsList
+    private val _markersList = MutableLiveData<List<Marker>>()
+    val markersList = _markersList
 
-    private var _selectedStudent: Student? = null
+    private var _selectedMarker: Marker? = null
 
-    private val _studentName = MutableLiveData<String>()
-    val studentName = _studentName
+    private val _markerTitle = MutableLiveData<String>()
+    val markerTitle = _markerTitle
 
-    private val _studentMark = MutableLiveData<String>()
-    val studentMark = _studentMark
+    private val _markerDescription = MutableLiveData<String>()
+    val markerDescription = _markerDescription
 
-    fun getAllStudents() {
+    fun getAllMarkers() {
         CoroutineScope(Dispatchers.IO).launch {
-            val databaseStudents = database.getAllStudents()
+            val markers = supabaseClient.getAllMarkers()
             withContext(Dispatchers.Main) {
-                _studentsList.value = databaseStudents
+                _markersList.value = markers
             }
         }
     }
 
-    fun insertNewStudent(name: String, mark: String) {
-        val newStudent = Student(name = name, mark = mark.toDouble())
+    fun insertNewMarker(title: String, description: String, latitud: Double, longitud: Double, image: String) {
+        val newMarker = Marker(
+            title = title,
+            description = description,
+            latitud = latitud,
+            longitud = longitud,
+            image = image
+        )
         CoroutineScope(Dispatchers.IO).launch {
-            database.insertStudent(newStudent)
-            getAllStudents()
+            supabaseClient.insertMarker(newMarker)
+            getAllMarkers()
         }
     }
 
-    fun updateStudent(id: String, name: String, mark: String){
+    fun updateMarker(id: Int, title: String, description: String, latitud: Double, longitud: Double, image: String) {
+        val updatedMarker = Marker(
+            id = id,
+            title = title,
+            description = description,
+            latitud = latitud,
+            longitud = longitud,
+            image = image
+        )
         CoroutineScope(Dispatchers.IO).launch {
-            database.updateStudent(id, name, mark.toDouble())
+            supabaseClient.updateMarker(id, updatedMarker)
+            getAllMarkers()
         }
     }
 
-    fun deleteStudent(id: String){
+    fun deleteMarker(id: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            database.deleteStudent(id)
-            getAllStudents()
+            supabaseClient.deleteMarker(id)
+            getAllMarkers()
         }
     }
 
-    fun getStudent(id: String){
-        if(_selectedStudent == null){
+    fun getMarker(id: Int) {
+        if (_selectedMarker == null) {
             CoroutineScope(Dispatchers.IO).launch {
-                val student = database.getStudent(id)
+                val marker = supabaseClient.getMarker(id)
                 withContext(Dispatchers.Main) {
-                    _selectedStudent = student
-                    _studentName.value = student.name
-                    _studentMark.value = student.mark.toString()
+                    _selectedMarker = marker
+                    _markerTitle.value = marker.title
+                    _markerDescription.value = marker.description
                 }
             }
         }
     }
 
-    fun editStudentName(name: String) {
-        _studentName.value = name
+    fun editMarkerTitle(title: String) {
+        _markerTitle.value = title
     }
 
-    fun editStudentMark(mark: String) {
-        _studentMark.value = mark
+    fun editMarkerDescription(description: String) {
+        _markerDescription.value = description
     }
 }

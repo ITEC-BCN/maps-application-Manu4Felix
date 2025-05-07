@@ -11,9 +11,9 @@ class MySupabaseClient {
     private val supabaseUrl = BuildConfig.SUPABASE_URL
     private val supabaseKey = BuildConfig.SUPABASE_KEY
 
-    lateinit var client: SupabaseClient
+    val client: SupabaseClient
 
-    constructor(){
+    init {
         client = createSupabaseClient(
             supabaseUrl = supabaseUrl,
             supabaseKey = supabaseKey
@@ -22,32 +22,32 @@ class MySupabaseClient {
         }
     }
 
-    //SQL operations
-    suspend fun getAllStudents(): List<Student> {
-        return client.from("Student").select().decodeList<Student>()
+    // SQL operations
+    suspend fun getAllMarkers(): List<Marker> {
+        return client.from("Marker").select().decodeList<Marker>()
     }
 
-    suspend fun getStudent(id: String): Student {
-        return client.from("Student").select {
+    suspend fun getMarker(id: Int): Marker {
+        return client.from("Marker").select {
             filter {
                 eq("id", id)
             }
-        }.decodeSingle<Student>()
+        }.decodeSingle<Marker>()
     }
 
-    suspend fun insertStudent(student: Student) {
-        client.from("Student").insert(student)
+    suspend fun insertMarker(marker: Marker) {
+        client.from("Marker").insert(marker)
     }
 
-    suspend fun updateStudent(id: String, name: String, mark: Double) {
-        client.from("Student").update({
-            set("name", name)
-            set("mark", mark)
-        }) { filter { eq("id", id) } }
+    suspend fun updateMarker(id: Int, marker: Marker) {
+        client.from("Marker").update(marker) {
+            filter { eq("id", id) }
+        }
     }
 
-    suspend fun deleteStudent(id: String) {
-        client.from("Student").delete { filter { eq("id", id) } }
+    suspend fun deleteMarker(id: Int) {
+        client.from("Marker").delete {
+            filter { eq("id", id) }
+        }
     }
-
 }

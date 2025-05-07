@@ -15,20 +15,32 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mapsapp.viewmodels.MarkerViewModel
 
 @Composable
-fun StudentDetailScreen(studentId: String, navigateBack: () -> Unit){
-    val myViewModel = viewModel<MarkerViewModel>()
-    myViewModel.getStudent(studentId)
-    val studentName: String by myViewModel.studentName.observeAsState("")
-    val studentMark: String by myViewModel.studentMark.observeAsState("")
+fun DetailMarkerScreen(markerId: String, navigateBack: () -> Unit) {
+    val markerViewModel = viewModel<MarkerViewModel>()
+    markerViewModel.getMarker(markerId.toInt())
+    val markerTitle: String by markerViewModel.markerTitle.observeAsState("")
+    val markerDescription: String by markerViewModel.markerDescription.observeAsState("")
+    val markerLatitud: String by markerViewModel.markerTitle.observeAsState("")
+    val markerLongitud: String by markerViewModel.markerDescription.observeAsState("")
+
     Column(
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        TextField(value = studentName, onValueChange = { myViewModel.editStudentName(it) })
-        TextField(value = studentMark, onValueChange = { myViewModel.editStudentMark(it) })
+        TextField(value = markerTitle, onValueChange = { markerViewModel.editMarkerTitle(it) }, label = { Text("Title") })
+        TextField(value = markerDescription, onValueChange = { markerViewModel.editMarkerDescription(it) }, label = { Text("Description") })
+        TextField(value = markerLatitud, onValueChange = { markerViewModel.editMarkerTitle(it) }, label = { Text("Title") })
+        TextField(value = markerDescription, onValueChange = { markerViewModel.editMarkerDescription(it) }, label = { Text("Description") })
         Button(onClick = {
-            myViewModel.updateStudent(studentId, studentName, studentMark)
+            markerViewModel.updateMarker(
+                markerId.toInt(),
+                markerTitle,
+                markerDescription,
+                markerLatitud.toDoubleOrNull() ?: 0.0,
+                markerLongitud.toDoubleOrNull() ?: 0.0,
+                ""
+            )
             navigateBack()
         }) {
             Text("Update")
