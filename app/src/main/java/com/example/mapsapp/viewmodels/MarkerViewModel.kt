@@ -1,13 +1,18 @@
 package com.example.mapsapp.viewmodels
 
+import android.graphics.Bitmap
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.mapsapp.MyApp.Companion.database
 import com.example.mapsapp.data.Marker
 import com.example.mapsapp.data.MySupabaseClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 
 class MarkerViewModel : ViewModel() {
 
@@ -33,27 +38,30 @@ class MarkerViewModel : ViewModel() {
         }
     }
 
-    fun insertNewMarker(title: String, description: String, latitud: Double, longitud: Double, image: String) {
-        val newMarker = Marker(
-            title = title,
-            description = description,
-            latitud = latitud,
-            longitud = longitud,
-            image = image
-        )
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun insertNewMarker(title: String, description: String, latitude: Double, longitude: Double, image: Bitmap?) {
+        val stream = ByteArrayOutputStream()
+        image?.compress(Bitmap.CompressFormat.PNG, 0, stream)
         CoroutineScope(Dispatchers.IO).launch {
-            supabaseClient.insertMarker(newMarker)
-            getAllMarkers()
+            val imageName = database.uploadImage(stream.toByteArray())
+            val newMarker = Marker(
+                title = title,
+                description = description,
+                latitude = latitude,
+                longitude = longitude,
+                image = imageName
+            )
+            database.insertMarker(newMarker)
         }
     }
 
-    fun updateMarker(id: Int, title: String, description: String, latitud: Double, longitud: Double, image: String) {
+    fun updateMarker(id: Int, title: String, description: String, latitude: Double, longitude: Double, image: String) {
         val updatedMarker = Marker(
             id = id,
             title = title,
             description = description,
-            latitud = latitud,
-            longitud = longitud,
+            latitude = latitude,
+            longitude = longitude,
             image = image
         )
         CoroutineScope(Dispatchers.IO).launch {

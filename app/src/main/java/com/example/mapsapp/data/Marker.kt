@@ -7,8 +7,8 @@ data class Marker(
     val id: Int = 0,
     val title: String,
     val image: String,
-    val latitud: Double,
-    val longitud: Double,
+    val latitude: Double,
+    val longitude: Double,
     val description: String
 )
 

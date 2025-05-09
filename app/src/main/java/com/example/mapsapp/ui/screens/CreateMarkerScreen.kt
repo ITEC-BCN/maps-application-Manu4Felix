@@ -4,8 +4,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -51,11 +53,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
-import com.example.mapsapp.R
 import com.example.mapsapp.data.Marker
 import com.example.mapsapp.viewmodels.MarkerViewModel
+import com.google.android.gms.maps.model.LatLng
 import java.io.File
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CreateMarkerScreen(
     navigateToDetail: (String) -> Unit,
@@ -150,28 +153,27 @@ fun CreateMarkerScreen(
                         }
                     )
                 }
-                Image(
-                    painter = painterResource(id = R.drawable.camara),
-                    contentDescription = "Abrir Cámara o Galería",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clickable { showDialog = true }
-                )
+//                Image(
+//                    painter = painterResource(id = R.drawable.camara),
+//                    contentDescription = "Abrir Cámara o Galería",
+//                    modifier = Modifier
+//                        .size(100.dp)
+//                        .clickable { showDialog = true }
+//                )
             }
 
-            Button(onClick = {
-                if (selectedLatitud != null && selectedLongitud != null) {
-                    myViewModel.insertNewMarker(
-                        title = markerTitle,
-                        description = markerDescription,
-                        latitud = selectedLatitud!!,
-                        longitud = selectedLongitud!!,
-                        image = markerImage
-                    )
-                }
-            }) {
-                Text("Add")
-            }
+//            Button(onClick = {
+//                if (selectedLatitud != null && selectedLongitud != null) {
+//                    myViewModel.insertNewMarker(
+//                        title = markerTitle,
+//                        description = markerDescription,
+//                        latitude = LatLng,
+//                        image = markerImage
+//                    )
+//                }
+//            }) {
+//                Text("Add")
+//            }
         }
         LazyColumn(
             Modifier
@@ -234,7 +236,7 @@ fun MarkerItem(marker: Marker, navigateToDetail: (String) -> Unit) {
             horizontalArrangement = Arrangement.Center
         ) {
             Text(marker.title, fontSize = 28.sp, fontWeight = FontWeight.Bold)
-            Text(text = "Lat: ${marker.latitud}, Lng: ${marker.longitud}")
+            Text(text = "Lat: ${marker.latitude}, Lng: ${marker.longitude}")
         }
     }
 }

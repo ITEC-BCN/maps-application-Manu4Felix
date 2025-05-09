@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mapsapp.viewmodels.MarkerViewModel
+import com.google.android.gms.maps.model.LatLng
 
 @Composable
 fun DetailMarkerScreen(markerId: String, navigateBack: () -> Unit) {
@@ -32,18 +33,17 @@ fun DetailMarkerScreen(markerId: String, navigateBack: () -> Unit) {
         TextField(value = markerDescription, onValueChange = { markerViewModel.editMarkerDescription(it) }, label = { Text("Description") })
         TextField(value = markerLatitud, onValueChange = { markerViewModel.editMarkerTitle(it) }, label = { Text("Title") })
         TextField(value = markerDescription, onValueChange = { markerViewModel.editMarkerDescription(it) }, label = { Text("Description") })
-        Button(onClick = {
-            markerViewModel.updateMarker(
-                markerId.toInt(),
-                markerTitle,
-                markerDescription,
-                markerLatitud.toDoubleOrNull() ?: 0.0,
-                markerLongitud.toDoubleOrNull() ?: 0.0,
-                ""
-            )
-            navigateBack()
-        }) {
-            Text("Update")
-        }
+//        Button(onClick = {
+//            markerViewModel.insertNewMarker(
+//                markerId.toInt(),
+//                markerTitle,
+//                markerDescription,
+//                LatLng(markerLatitud.toDouble(), markerLongitud.toDouble()),
+//                null // Cambiar "" por null para un Bitmap?
+//            )
+//            navigateBack()
+//        }) {
+//            Text("Update")
+//        }
     }
 }
