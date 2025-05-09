@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,8 +14,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,11 +45,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
+import com.example.mapsapp.R
 import com.example.mapsapp.data.Marker
 import com.example.mapsapp.viewmodels.MarkerViewModel
 import java.io.File
@@ -86,23 +91,40 @@ fun CreateMarkerScreen(
         }
 
     Column(
-        Modifier.fillMaxSize()
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
             Modifier
-                .fillMaxWidth()
-                .weight(0.4f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Create new marker", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-            TextField(value = markerTitle, onValueChange = { myViewModel.editMarkerTitle(it) }, label = { Text("Title") })
-            TextField(value = markerDescription, onValueChange = { myViewModel.editMarkerDescription(it) }, label = { Text("Description") })
+            TextField(
+                value = markerTitle,
+                onValueChange = { myViewModel.editMarkerTitle(it) },
+                label = { Text("Title") },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextField(
+                value = markerDescription,
+                onValueChange = { myViewModel.editMarkerDescription(it) },
+                label = { Text("Description") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+            )
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-
                 if (showDialog) {
                     AlertDialog(
                         onDismissRequest = { showDialog = false },
@@ -128,10 +150,15 @@ fun CreateMarkerScreen(
                         }
                     )
                 }
-                Button(onClick = { showDialog = true }) {
-                    Text("Abrir Cámara o Galería")
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.camara),
+                    contentDescription = "Abrir Cámara o Galería",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clickable { showDialog = true }
+                )
             }
+
             Button(onClick = {
                 if (selectedLatitud != null && selectedLongitud != null) {
                     myViewModel.insertNewMarker(
