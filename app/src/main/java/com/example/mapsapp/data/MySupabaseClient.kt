@@ -39,6 +39,10 @@ class MySupabaseClient {
     fun buildImageUrl(imageFileName: String) =
         "${this.supabaseUrl}/storage/v1/object/public/images/${imageFileName}"
 
+    suspend fun deleteImage(imageName: String){
+        val imgName = imageName.removePrefix("https://luxphgkqoavsmerxhoka.supabase.co/storage/v1/object/public/images/")
+        client.storage.from("images").delete(imgName)
+    }
 
     // SQL operations
     suspend fun getAllMarkers(): List<Marker> {
@@ -57,9 +61,17 @@ class MySupabaseClient {
         client.from("Marker").insert(marker)
     }
 
-    suspend fun updateMarker(id: Int, marker: Marker) {
-        client.from("Marker").update(marker) {
-            filter { eq("id", id) }
+    suspend fun updateMarker(id: Int, title: String, coordenadas: String, description: String, imageName: String, imageFile: ByteArray) {
+        val updatedImageName = storage.from("images").update(path = imageName, data = imageFile)
+        client.from("Marker").update({
+            set("title", title)
+            set("description", coordenadas)
+            set("coordenadas", description)
+            set("image", buildImageUrl(imageFileName = updatedImageName.path))
+        }) {
+            filter {
+                eq("id", id)
+            }
         }
     }
 

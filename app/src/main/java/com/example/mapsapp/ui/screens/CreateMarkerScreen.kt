@@ -1,5 +1,7 @@
 package com.example.mapsapp.ui.screens
 
+import android.R.attr.description
+import android.R.attr.title
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -58,24 +60,21 @@ import com.example.mapsapp.viewmodels.MarkerViewModel
 import com.google.android.gms.maps.model.LatLng
 import java.io.File
 
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CreateMarkerScreen(
-    navigateToDetail: (String) -> Unit,
-) {
+fun CreateMarkerScreen(coordenadas: String, navigateToBack: () -> Unit) {
     val myViewModel = viewModel<MarkerViewModel>()
     val markersList by myViewModel.markersList.observeAsState(emptyList<Marker>())
     myViewModel.getAllMarkers()
+
     val markerTitle: String by myViewModel.markerTitle.observeAsState("")
     val markerDescription: String by myViewModel.markerDescription.observeAsState("")
+
     var showDialog by remember { mutableStateOf(false) }
-    var markerImage: String = ""
     val context = LocalContext.current
     val imageUri = remember { mutableStateOf<Uri?>(null) }
     val bitmap = remember { mutableStateOf<Bitmap?>(null) }
-    // Variables para almacenar las coordenadas seleccionadas
-    var selectedLatitud: Double? = null
-    var selectedLongitud: Double? = null
 
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
@@ -160,83 +159,32 @@ fun CreateMarkerScreen(
 //                        .size(100.dp)
 //                        .clickable { showDialog = true }
 //                )
-            }
-
-//            Button(onClick = {
-//                if (selectedLatitud != null && selectedLongitud != null) {
-//                    myViewModel.insertNewMarker(
-//                        title = markerTitle,
-//                        description = markerDescription,
-//                        latitude = LatLng,
-//                        image = markerImage
-//                    )
-//                }
-//            }) {
-//                Text("Add")
-//            }
-        }
-        LazyColumn(
-            Modifier
-                .fillMaxWidth()
-                .weight(0.6f)
-        ) {
-            items(markersList) { marker ->
-                val dismissState = rememberSwipeToDismissBoxState(
-                    confirmValueChange = {
-                        if (it == SwipeToDismissBoxValue.EndToStart) {
-                            myViewModel.deleteMarker(marker.id)
-                            true
-                        } else {
-                            false
-                        }
-                    }
-                )
-                SwipeToDismissBox(state = dismissState, backgroundContent = {
-                    Box(
-                        Modifier
-                            .fillMaxSize()
-                            .background(Color.Red)
-                            .padding(horizontal = 20.dp),
-                        contentAlignment = Alignment.BottomEnd
-                    ) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
-                    }
-                }) {
-                    MarkerItem(marker) { navigateToDetail(marker.id.toString()) }
+                Button(
+                    onClick = { showDialog = true },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(text = "Seleccionar Imagen", color = Color.White)
                 }
             }
+
+            Button(onClick = {
+                myViewModel.insertNewMarker(0, title = markerTitle, markerDescription, coordenadas, bitmap.value)
+                navigateToBack()
+            }) {
+                Text("Add")
+            }
         }
-    }
-    fun createImageUri(context: Context): Uri? {
-        val file = File.createTempFile("temp_image_", ".jpg", context.cacheDir).apply {
-            createNewFile()
-            deleteOnExit()
-        }
-        return FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            file
-        )
     }
 }
 
-
-@Composable
-fun MarkerItem(marker: Marker, navigateToDetail: (String) -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.LightGray)
-            .border(width = 2.dp, Color.DarkGray)
-            .clickable { navigateToDetail(marker.id.toString()) }
-    ) {
-        Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(marker.title, fontSize = 28.sp, fontWeight = FontWeight.Bold)
-            Text(text = "Lat: ${marker.latitude}, Lng: ${marker.longitude}")
-        }
+fun createImageUri(context: Context): Uri? {
+    val file = File.createTempFile("temp_image_", ".jpg", context.cacheDir).apply {
+        createNewFile()
+        deleteOnExit()
     }
+    return FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        file
+    )
 }

@@ -39,34 +39,36 @@ class MarkerViewModel : ViewModel() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun insertNewMarker(title: String, description: String, latitude: Double, longitude: Double, image: Bitmap?) {
+    fun insertNewMarker(id: Int, title: String, description: String, coordenadas: String, image: Bitmap?) {
         val stream = ByteArrayOutputStream()
         image?.compress(Bitmap.CompressFormat.PNG, 0, stream)
         CoroutineScope(Dispatchers.IO).launch {
             val imageName = database.uploadImage(stream.toByteArray())
             val newMarker = Marker(
+                id = id,
                 title = title,
                 description = description,
-                latitude = latitude,
-                longitude = longitude,
+                coordenadas = coordenadas,
                 image = imageName
             )
             database.insertMarker(newMarker)
         }
     }
 
-    fun updateMarker(id: Int, title: String, description: String, latitude: Double, longitude: Double, image: String) {
-        val updatedMarker = Marker(
-            id = id,
-            title = title,
-            description = description,
-            latitude = latitude,
-            longitude = longitude,
-            image = image
-        )
+    fun updateMarker(id: Int, title: String, description: String, coordenadas: String, image: Bitmap?) {
+        val stream = ByteArrayOutputStream()
+        image?.compress(Bitmap.CompressFormat.PNG, 0, stream)
+        val imageName =
+            _selectedMarker?.image?.removePrefix("https://aobflzinjcljzqpxpcxs.supabase.co/storage/v1/object/public/images/")
         CoroutineScope(Dispatchers.IO).launch {
-            supabaseClient.updateMarker(id, updatedMarker)
-            getAllMarkers()
+            database.updateMarker(
+                id,
+                title,
+                coordenadas,
+                description,
+                imageName.toString(),
+                stream.toByteArray()
+            )
         }
     }
 
