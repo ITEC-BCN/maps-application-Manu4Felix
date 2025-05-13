@@ -1,7 +1,5 @@
 package com.example.mapsapp.ui.screens
 
-import android.R.attr.description
-import android.R.attr.title
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,11 +9,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,20 +19,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -47,29 +33,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import com.example.mapsapp.data.Marker
 import com.example.mapsapp.viewmodels.MarkerViewModel
-import com.google.android.gms.maps.model.LatLng
 import java.io.File
+import com.example.supabasetest.R
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CreateMarkerScreen(coordenadas: String, navigateToBack: () -> Unit) {
-    val myViewModel = viewModel<MarkerViewModel>()
-    val markersList by myViewModel.markersList.observeAsState(emptyList<Marker>())
-    myViewModel.getAllMarkers()
+    val markerViewModel = viewModel<MarkerViewModel>()
+    val markersList by markerViewModel.markersList.observeAsState(emptyList<Marker>())
+    markerViewModel.getAllMarkers()
 
-    val markerTitle: String by myViewModel.markerTitle.observeAsState("")
-    val markerDescription: String by myViewModel.markerDescription.observeAsState("")
+    val markerTitle: String by markerViewModel.markerTitle.observeAsState("")
+    val markerDescription: String by markerViewModel.markerDescription.observeAsState("")
 
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -106,7 +89,7 @@ fun CreateMarkerScreen(coordenadas: String, navigateToBack: () -> Unit) {
         ) {
             TextField(
                 value = markerTitle,
-                onValueChange = { myViewModel.editMarkerTitle(it) },
+                onValueChange = { markerViewModel.editMarkerTitle(it) },
                 label = { Text("Title") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -116,7 +99,7 @@ fun CreateMarkerScreen(coordenadas: String, navigateToBack: () -> Unit) {
 
             TextField(
                 value = markerDescription,
-                onValueChange = { myViewModel.editMarkerDescription(it) },
+                onValueChange = { markerViewModel.editMarkerDescription(it) },
                 label = { Text("Description") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,23 +135,17 @@ fun CreateMarkerScreen(coordenadas: String, navigateToBack: () -> Unit) {
                         }
                     )
                 }
-//                Image(
-//                    painter = painterResource(id = R.drawable.camara),
-//                    contentDescription = "Abrir Cámara o Galería",
-//                    modifier = Modifier
-//                        .size(100.dp)
-//                        .clickable { showDialog = true }
-//                )
-                Button(
-                    onClick = { showDialog = true },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(text = "Seleccionar Imagen", color = Color.White)
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.camara),
+                    contentDescription = "Abrir Cámara o Galería",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clickable { showDialog = true }
+                )
             }
 
             Button(onClick = {
-                myViewModel.insertNewMarker(0, markerTitle, markerDescription, coordenadas, bitmap.value)
+                markerViewModel.insertNewMarker(0, markerTitle, markerDescription, coordenadas, bitmap.value)
                 navigateToBack()
             }) {
                 Text("Add")

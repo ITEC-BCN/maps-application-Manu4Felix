@@ -61,12 +61,11 @@ class MySupabaseClient {
         client.from("Marker").insert(marker)
     }
 
-    suspend fun updateMarker(id: Int, title: String, coordenadas: String, description: String, imageName: String, imageFile: ByteArray) {
+    suspend fun updateMarker(id: Int, title: String, description: String, imageName: String, imageFile: ByteArray) {
         val updatedImageName = storage.from("images").update(path = imageName, data = imageFile)
         client.from("Marker").update({
             set("title", title)
-            set("description", coordenadas)
-            set("coordenadas", description)
+            set("description", description)
             set("image", buildImageUrl(imageFileName = updatedImageName.path))
         }) {
             filter {

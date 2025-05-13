@@ -1,72 +1,93 @@
 package com.example.mapsapp.ui.screens
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.runtime.*
 import com.example.mapsapp.viewmodels.MarkerViewModel
 import com.google.android.gms.maps.model.Marker
 
 @Composable
-fun MarkerListScreen() {
-// Lista de ejemplo
-    val items = listOf("Elemento 1", "Elemento 2", "Elemento 3", "Elemento 4")
+fun MarkerListScreen(navigateToDetails: (Int) -> Unit) {
+    val markerViewModel: MarkerViewModel = viewModel()
+    val markersList by markerViewModel.markersList.observeAsState(emptyList<Marker>())
 
-    // Pantalla principal
+    LaunchedEffect(Unit) {
+        markerViewModel.getAllMarkers()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp) // padding general
     ) {
-        // LazyColumn para mostrar la lista
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(items) { item ->
-                ListItem(item)
+        if (markersList.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 16.dp) // para dejar espacio al final
+            ) {
+                items(markersList) { marker ->
+                    MarkerListItem(marker as com.example.mapsapp.data.Marker, navigateToDetails)
+                }
             }
         }
     }
 }
 
+
 @Composable
-fun ListItem(item: String) {
-    // Elemento individual de la lista
-    Text(
-        text = item,
-        style = MaterialTheme.typography.bodyLarge,
+fun MarkerListItem(marker: com.example.mapsapp.data.Marker, navigateToDetails: (Int) -> Unit) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-    )
+            .padding(start = 20.dp)
+            .padding(vertical = 2.dp), // espacio arriba y abajo de cada ítem
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, Color.Gray),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        onClick = { navigateToDetails(marker.id) }
+
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            Text(
+                text = marker.title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = marker.description,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Coordenadas: ${marker.coordenadas}",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
+    }
 }

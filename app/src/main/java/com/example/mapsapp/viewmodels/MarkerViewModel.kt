@@ -55,7 +55,7 @@ class MarkerViewModel : ViewModel() {
         }
     }
 
-    fun updateMarker(id: Int, title: String, description: String, coordenadas: String, image: Bitmap?) {
+    fun updateMarker(id: Int, title: String, description: String, image: Bitmap?) {
         val stream = ByteArrayOutputStream()
         image?.compress(Bitmap.CompressFormat.PNG, 0, stream)
         val imageName =
@@ -64,7 +64,6 @@ class MarkerViewModel : ViewModel() {
             database.updateMarker(
                 id,
                 title,
-                coordenadas,
                 description,
                 imageName.toString(),
                 stream.toByteArray()
