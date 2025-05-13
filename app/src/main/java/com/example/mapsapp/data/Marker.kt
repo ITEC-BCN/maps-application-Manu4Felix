@@ -6,9 +6,8 @@ import kotlinx.serialization.Serializable
 data class Marker(
     val id: Int = 0,
     val title: String,
-    val coordenadas: String,
     val description: String,
-    val image: String,
-    val userID: Int = 0
+    val coordenadas: String,
+    val image: String
 )
 

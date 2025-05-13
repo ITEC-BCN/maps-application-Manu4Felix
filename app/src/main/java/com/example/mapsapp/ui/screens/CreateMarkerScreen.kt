@@ -168,7 +168,7 @@ fun CreateMarkerScreen(coordenadas: String, navigateToBack: () -> Unit) {
             }
 
             Button(onClick = {
-                myViewModel.insertNewMarker(0, title = markerTitle, markerDescription, coordenadas, bitmap.value)
+                myViewModel.insertNewMarker(0, markerTitle, markerDescription, coordenadas, bitmap.value)
                 navigateToBack()
             }) {
                 Text("Add")
