@@ -35,20 +35,31 @@ fun MapsScreen(modifier: Modifier = Modifier, navigateToMarker: (String) -> Unit
         }
 
         GoogleMap(
-            Modifier.fillMaxSize(), cameraPositionState = cameraPositionState,
-            onMapClick = {
-                Log.d("MAP CLICKED", it.toString())
-            }, onMapLongClick = { latLng ->
-                navigateToMarker(latLng.toString())
-            }) {
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            onMapLongClick = { latLng ->
+                val coordenadas = "${latLng.latitude},${latLng.longitude}"
+                navigateToMarker(coordenadas)
+            }
+        ) {
+            marcadores.value?.forEach { marker ->
 
-            Marker(
-                state = MarkerState(position = itb)
-            )
-            coordenadasViewModel.selectedMarker?.let {
-                Marker(
-                    state = MarkerState(position = it)
-                )
+                val cleanedLatLng = marker.coordenadas
+                    .replace("lat/lng: (", "")
+                    .replace(")", "")
+                val latLngParts = cleanedLatLng.split(",")
+                if (latLngParts.size == 2) {
+                    val lat = latLngParts[0].trim().toDouble()
+                    val lon = latLngParts[1].trim().toDouble()
+                    val position = LatLng(lat, lon)
+                    Marker(
+                        state = MarkerState(position = position),
+                        title = marker.title,
+                        snippet = marker.description
+                    )
+                } else {
+                    Log.e("MapsScreen", "Formato de LatLng incorrecto: ${marker.coordenadas}")
+                }
             }
         }
     }

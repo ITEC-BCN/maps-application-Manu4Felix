@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.supabasetest.BuildConfig
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
@@ -23,6 +24,9 @@ class MySupabaseClient {
         client = createSupabaseClient(supabaseUrl = supabaseUrl, supabaseKey = supabaseKey) {
             install(Postgrest)
             install(Storage)
+            install(Auth){
+                autoLoadFromStorage = true
+            }
         }
         storage = client.storage
     }

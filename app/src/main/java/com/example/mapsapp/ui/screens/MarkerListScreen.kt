@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -15,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mapsapp.data.Marker
 import com.example.mapsapp.viewmodels.MarkerViewModel
-import com.google.android.gms.maps.model.Marker
 
 @Composable
 fun MarkerListScreen(navigateToDetails: (Int) -> Unit) {
@@ -42,12 +44,32 @@ fun MarkerListScreen(navigateToDetails: (Int) -> Unit) {
             }
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(bottom = 16.dp) // para dejar espacio al final
+                modifier = Modifier.fillMaxWidth().weight(0.6f)
             ) {
-                items(markersList) { marker ->
-                    MarkerListItem(marker as com.example.mapsapp.data.Marker, navigateToDetails)
+                items(items = markersList) { marker ->
+                    val dismissState = rememberSwipeToDismissBoxState()
+                    if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart &&
+                        dismissState.targetValue == SwipeToDismissBoxValue.EndToStart) {
+                        LaunchedEffect(Unit) {
+                            markerViewModel.deleteMarker(marker.id)
+                        }
+                    }
+                    SwipeToDismissBox(
+                        state = dismissState,
+                        backgroundContent = {
+                            Box(
+                                Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete"
+                                )
+                            }
+                        }
+                    ) {
+                        MarkerListItem(marker, navigateToDetails)
+                    }
                 }
             }
         }
@@ -56,7 +78,7 @@ fun MarkerListScreen(navigateToDetails: (Int) -> Unit) {
 
 
 @Composable
-fun MarkerListItem(marker: com.example.mapsapp.data.Marker, navigateToDetails: (Int) -> Unit) {
+fun MarkerListItem(marker: Marker, navigateToDetails: (Int) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
