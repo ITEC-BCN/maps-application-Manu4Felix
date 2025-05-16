@@ -33,7 +33,7 @@ fun MarkerListScreen(navigateToDetails: (Int) -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp) // padding general
+            .padding(10.dp) // padding general
     ) {
         if (markersList.isEmpty()) {
             Box(
@@ -44,7 +44,7 @@ fun MarkerListScreen(navigateToDetails: (Int) -> Unit) {
             }
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxWidth().weight(0.6f)
+                modifier = Modifier.fillMaxWidth().weight(0.6f).padding(top = 90.dp)
             ) {
                 items(items = markersList) { marker ->
                     val dismissState = rememberSwipeToDismissBoxState()
