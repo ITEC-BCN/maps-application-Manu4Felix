@@ -33,32 +33,44 @@ import com.example.mapsapp.viewmodels.PermissionViewModel
 
 @Composable
 fun PermissionScreen(navigateToDrawer: () -> Unit) {
+    // Obtenemos la actividad actual del contexto
     val activity = LocalContext.current as? Activity
+
+    // Obtenemos el ViewModel encargado del manejo de permisos
     val viewModel = viewModel<PermissionViewModel>()
 
+    // Definimos la lista de permisos a solicitar
     val permissions = listOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.CAMERA,
         Manifest.permission.RECORD_AUDIO
     )
 
+    // Obtenemos el estado actual de cada permiso desde el ViewModel
     val permissionsStatus = viewModel.permissionsStatus.value
+
+    // Controlamos si ya se solicitó el permiso previamente
     var alreadyRequested by remember { mutableStateOf(false) }
 
+    // Definimos el lanzador de actividad para solicitar múltiples permisos
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { result: Map<String, Boolean> ->
+        // Procesamos el resultado de cada permiso solicitado
         permissions.forEach { permission ->
             val granted = result[permission] ?: false
             val status = when {
                 granted -> PermissionStatus.Granted
-                ActivityCompat.shouldShowRequestPermissionRationale(activity!!, permission) -> PermissionStatus.Denied
+                ActivityCompat.shouldShowRequestPermissionRationale(activity!!, permission) ->
+                    PermissionStatus.Denied
                 else -> PermissionStatus.PermanentlyDenied
             }
+            // Actualizamos el estado del permiso en el ViewModel
             viewModel.updatePermissionStatus(permission, status)
         }
     }
 
+    // Lanzamos la solicitud de permisos una sola vez al iniciar
     LaunchedEffect(Unit) {
         if (!alreadyRequested) {
             alreadyRequested = true
@@ -66,13 +78,17 @@ fun PermissionScreen(navigateToDrawer: () -> Unit) {
         }
     }
 
+    // Mostramos la UI principal centrada en pantalla
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // Mostramos el título de la sección
         Text("Permissions status:", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(16.dp))
+
+        // Recorremos cada permiso para mostrar su estado
         permissions.forEach { permission ->
             val status = permissionsStatus[permission]
             val label = when (status) {
@@ -84,7 +100,10 @@ fun PermissionScreen(navigateToDrawer: () -> Unit) {
             val permissionName = permission.removePrefix("android.permission.")
             Text("$permissionName: $label")
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Mostramos un botón para volver a pedir permisos si alguno fue denegado
         if (permissions.any {
                 permissionsStatus[it] == PermissionStatus.Denied
             }
@@ -95,9 +114,11 @@ fun PermissionScreen(navigateToDrawer: () -> Unit) {
                 Text("Apply again")
             }
         } else {
+            // Si todos los permisos son aceptados, navegamos a la siguiente pantalla
             navigateToDrawer()
         }
 
+        // Mostramos un botón para abrir ajustes si algún permiso fue denegado permanentemente
         if (permissions.any {
                 permissionsStatus[it] == PermissionStatus.PermanentlyDenied
             }
@@ -111,7 +132,8 @@ fun PermissionScreen(navigateToDrawer: () -> Unit) {
             }) {
                 Text("Go to settings")
             }
-        } else{
+        } else {
+            // Si no hay permisos bloqueados, navegamos a la siguiente pantalla
             navigateToDrawer()
         }
     }

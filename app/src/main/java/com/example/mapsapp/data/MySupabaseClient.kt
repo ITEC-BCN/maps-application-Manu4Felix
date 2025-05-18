@@ -2,7 +2,7 @@ package com.example.mapsapp.data
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.mapsapp.utils.AuthState
+//import com.example.mapsapp.utils.AuthState
 import com.example.supabasetest.BuildConfig
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
@@ -31,19 +31,6 @@ class MySupabaseClient {
         }
         storage = client.storage
     }
-
-//    suspend fun signUpWithEmail(emailValue: String, passwordValue: String): AuthState {
-//        try {
-//            supabase.auth.signUpWith(Email) {
-//                email = emailValue
-//                password = passwordValue
-//            }
-//            return AuthState.Authenticated
-//        } catch (e: Exception) {
-//            return AuthState.Error(e.localizedMessage)
-//        }
-//    }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun uploadImage(imageFile: ByteArray): String {
