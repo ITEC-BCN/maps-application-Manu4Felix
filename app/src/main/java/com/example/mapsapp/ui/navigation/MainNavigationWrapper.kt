@@ -12,14 +12,23 @@ import com.example.mapsapp.ui.screens.PermissionScreen
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainNavigationWrapper() {
+    // Creamos y recordamos un controlador de navegación para gestionar la navegación entre pantallas
     val navController = rememberNavController()
-    NavHost(navController, Destination.Permissions){
-        composable<Destination.Permissions>{
+
+    // Definimos el host de navegación principal, comenzando en la pantalla de permisos
+    NavHost(navController, Destination.Permissions) {
+
+        // Definimos la ruta para la pantalla de permisos
+        composable<Destination.Permissions> {
+            // Mostramos la pantalla de permisos y navegamos al Drawer si se aceptan
             PermissionScreen {
                 navController.navigate(Destination.Drawer)
             }
         }
-        composable<Destination.Drawer>{
+
+        // Definimos la ruta para la pantalla principal con Drawer
+        composable<Destination.Drawer> {
+            // Mostramos la pantalla con el menú lateral
             DrawerScreen()
         }
     }

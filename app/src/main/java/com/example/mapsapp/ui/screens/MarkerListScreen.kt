@@ -80,7 +80,7 @@ fun MarkerListScreen(navigateToDetails: (Int) -> Unit) {
                         if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart &&
                             dismissState.targetValue == SwipeToDismissBoxValue.EndToStart) {
                             LaunchedEffect(Unit) {
-                                markerViewModel.deleteMarker(marker.id)
+                                markerViewModel.deleteMarker(marker.id, marker.image)
                             }
                         }
 
